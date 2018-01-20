@@ -55,3 +55,120 @@ Four components——Activity、Service、Content Provider、Broadcast Receiver
         super.onDestroy();  
     }
     
+    
+    
+
+---
+#### app/src/main/Java/MainActivity:
+
+    package com.example.ucla.helloworld;
+
+    import android.support.v7.app.AppCompatActivity;
+    import android.os.Bundle;
+    import android.view.View;
+    import android.widget.Button;
+    import android.widget.EditText;
+    import android.widget.TextView;
+    import android.widget.Toast;
+
+    public class MainActivity extends AppCompatActivity {
+
+    private TextView textView;
+
+    private EditText editText;
+
+    private Button btn;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btn = (Button) findViewById(R.id.button);
+
+        textView = (TextView) findViewById(R.id.textView);
+        editText = (EditText) findViewById(R.id.editText);
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textView.setText("HITMSC");
+            }
+        });
+
+        btn.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                String string = editText.getText().toString();
+
+                if (string.equals("Android")){
+                    string = "Welcome";
+                }
+                else if (string.equals("toast")){
+                    Toast.makeText(MainActivity.this,"This is a toast",Toast.LENGTH_SHORT).show();
+                }
+                textView.setText(string);
+                return true;
+            }
+        });
+    }
+    
+
+---
+#### app/src/main/res/layout/activity_main
+
+    <?xml version="1.0" encoding="utf-8"?>
+
+    <LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:weightSum="1">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:orientation="vertical"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textView"
+                android:textSize="50dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LOOK"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/pic"/>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Button"
+            android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:hint="Click here to edit"
+            android:layout_margin="20dp"/>
+
+    </LinearLayout>
