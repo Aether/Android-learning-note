@@ -94,4 +94,181 @@ When you override a function,subclass can't declare more exception than supercla
 
 All the possible exceptions must be declared in the constructor of subclass.
     
+
+---
+
+#### Stream
+##### InputStream
+- int available();
+- void close;
+- void mark(int readlimit);
+- boolean markSupported();
+- abstract int read();
+- int read(byte[] b);
+- int read(byte[] b, int off, int len);
+- void reset();
+- long skip(long n);
+
+##### OutputStream
+- void close();
+- void flush();
+- void write(byte[] b);
+- void write(byte[] b, int off, int len);
+- abstract void write(int b);
+
+
+        public class Main{
+           public class void main(String[] args) {
+            System.out.println("hello world");
+            byte[] buffer = new byte[1024];
+            try {
+                int len = System.in.read(buffer);//len->GB code
+                String s = new String(buffer, 0, len);//s.length->Unicode
+            } catch (IOException e)
+                e.printStackTrace();
+            } 
+        }
     
+##### FileInputStream/FileOutputStream
+
+        public class Main{
+           public class void main(String[] args) {
+            System.out.println("hello world");
+            byte[] buffer = new byte[10];
+            for (int i = 0; i<buffer.length; i++) {
+                buffer[i] = (byte)i;
+            }
+            try {
+                FileOutputStream out = new FileOutputStream("a.dat");
+                out.write(buffer);
+                out.close
+            } catch (FileNotFoundException e)
+                e.printStackTrace();
+            } catch (IOException e)
+                e.printStackTrace();
+            } 
+        }
+        
+##### Stream Filter
+
+    try {
+        DataOutputStream out = new DataOutputStream(
+                        new BufferedOutputStream(
+                 new FileOutputStream("a.dat")));
+                 //binary input and output
+    }
+    
+##### Reader/Writer
+
+    
+    PrintWriter out = new PrintWriter(
+        new BufferWriter(
+            new OutputStreamWriter(
+                new FileOutputStream("a.txt"))));
+                
+    int i = 123456;
+    out.println(i); //Unicode -> ASCII or GB code
+    
+    BufferedReader in = new BufferedReader(
+        new InputStreamReader(
+            new FileInputStream("src/hello/Main.java")));
+            
+    String line;
+    while ((line = in.readLine()) != null) {
+        System.out.println(line);
+    }
+    
+- BufferedReader readLine();
+- LineNumberReader getLineNumber();
+
+    
+    BufferedReader in = new BufferedReader(
+        new InputStreamReader(
+            new FileInputStream("utf8.txt"), "utf8"));
+            
+            
+##### Stream/Reader/Scanner
+binary -> InputStream
+
+text -> Reader
+
+data -> Scanner
+
+##### Socket
+
+    public class Main {
+        public static void main(String[] args) {
+            try {
+                Socket socket = new Socket(InetAddress.getByName("localhost"),12345);
+                PrintWriter out = new PrintWriter(
+                    new BufferedWriter(
+                        new OutputStreamWriter(socket.getOutputStream)));
+                out.println("Hello");
+                out.flush();
+                BufferedReader in = new BufferedReader(
+                    new InputStreamReader(
+                        socket.getInputStream()));
+                String line;
+                line = in.readLine();
+                System.out.println(line);
+                out.close;
+                socket.close();
+            } catch(IOException e){
+                e.printStackTrace;
+            }
+        }
+    }
+    
+terminal
+
+    nc -l 12345
+    
+- the read()/nextInt()/readLine() function is blocked,you can use thread of use nio channel
+- for socket,we can set SO time
+    
+    setSoTimeout(int timeOut)
+
+#### Object Serialization
+- ObjectInputStream class
+- readObject();
+ 
+
+
+    class Student implements Serializable {
+        private String name;
+        private int age;
+        private int grade;
+    
+        public Student(String name, int age, int grade) {
+            this.name = name;
+            this.age = age;
+            this.grade = grade;
+        }
+    
+         public String toString() {
+             return name+" "+age+" "+grade;
+         }
+    }
+    
+    public class Main {
+        public static void main(String[] args) {
+            try {
+                Student s1 = new Student("John",18,5);
+                System.out.println(s1);
+                ObjectOutputStream out = new ObjectOutputStream(
+                        new FileOutputStream("obj.dat"))
+                out.writeObject(s1);
+                out.close();
+                ObjectInputStream in = new ObjectInputStream(
+                    new FileInputStream("obj.dat"));
+                Student s2 = (Student)in.readObject();
+                System.out.println(s2);//s1!=s2
+                in.close;
+            } catch (IOException e){
+                e.printStackTrace();
+            } catch (ClassNotFoundException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
