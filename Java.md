@@ -1,5 +1,5 @@
-
 #### HashMap
+
     public class Coin {
     
         private HashMap<Integer, String> coinnames = new HashMap<Integer, String>();
@@ -22,7 +22,89 @@
             Coin coin = new Coin();
     }
     
-####     Exception
+#### HashSet
+
+    public static void main(String[] args) {
+        HashSet<String> s = new HashSet<String>();
+        s.add("first");
+        s.add("second");
+        s.add("first");//{first,second}
+    }
+
+##### Use StringBuffer instead of add string
+    public String getExitDesc() {
+        StringBuffer sb = new StringBuffer();
+        if (northExit != null) {
+            sb.append("north ");
+        }
+        if (southExit != null) {
+            sb.append("south ");
+        }
+        if (eastExit != null) {
+            sb.append("east ");
+        }
+        if (westExit != null) {
+            sb.append("west ");
+        }
+        return sb.toString();
+    }
+
+####    Handler
+
+    public class Game {
+        private HashMap<String, Handler> handlers = new HashMap<String, Handler>;
+        public Game() {
+            handlers.put("bye", new HandlerBye());
+        }
+    }
+    
+    public class Handler {
+        public void doCmd(String word) {
+            public boolean isBye() {
+                return flase;
+            }
+        }
+    }
+    
+    public class HandlerBye extends Handler {
+        @Override
+        public boolean isBye() {
+            return true;
+        }
+    }
+    
+#### Abstract
+
+    public abstract class Shape {
+        
+        public abstract void draw(Graphics g);
+        
+    }
+    
+Abstract class can't generate object,but it can define variable.
+
+A subclass of an abstractclass must override abstract function in the super class.
+
+#### Interface
+
+Interface is abstract class.All member functions and member variables are **public static final**.
+
+    public class Fox extends Animal implements Cell {
+        //......
+    }
+    
+    public interface Cell {
+        //......
+    }
+    
+- Interface can inherit interface, but it can't inherit class.
+
+- Class can implement many interfaces,but interface can't implement interface.
+
+
+    
+#### Exception
+
     int[] a = new int[10];
     int idx;
     Scanner in = new Scanner(System.in);
@@ -271,4 +353,21 @@ terminal
             }
         }
     }
+
+#### Inversion of Control
+
+    JButton btnStep = new JButton("Button");
+    frame.add(btnStep, BorderLayout.NORTH);
+    btnStep.addActionListener(new ActionListener() { 
+        @Override
+        public void actionPerformed(Action e) {
+            //.....
+        }
+    });
+    
+##### Inner class 
+Inner class is defined in class or function, it can access all the resources outside, including any private member.(If it is defined in a function,it can only access the final variable.)
+
+##### Anonymous Class
+Anonymous Class can inherit class and implement interface.
 
