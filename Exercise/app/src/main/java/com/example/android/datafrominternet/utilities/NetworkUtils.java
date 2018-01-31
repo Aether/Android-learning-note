@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class NetworkUtils {
 
-    final static String WEATHER_BASE_URL = "https://free-api.heweather.com/s6/weather/forecast?";
+    final static String WEATHER_BASE_URL = "https://free-api.heweather.com/s6/weather?";
 
     final static String PARAM_CITY = "location";
 

@@ -34,6 +34,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -93,24 +94,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            String wind_direction = null;
-            if(s != null && !s.equals(""))
+        protected void onPostExecute(String data) {
+            HashMap<String,String> weatherdata = new HashMap<>();
+            if(data != null && !data.equals(""))
                 try {
-                    JSONObject weatherSearchResult = new JSONObject(s);
-                    JSONArray HeWeather = weatherSearchResult.getJSONArray("HeWeather6");
-                    Log.d("test",HeWeather+" "+"\n"+HeWeather.length());
-                    JSONObject Weather = HeWeather.getJSONObject(0);
-                    JSONArray daily_forecast = Weather.getJSONArray("daily_forecast");
-                    JSONObject wind_dir = (JSONObject) daily_forecast.get(0);
-                    wind_direction = wind_dir.getString("wind_dir");
-                    Log.d("test",wind_direction+" ");
+//                    JSONObject weatherSearchResult = new JSONObject(s);
+//                    JSONObject Weather = weatherSearchResult.getJSONArray("HeWeather6").getJSONObject(0);
+//                    JSONObject daily_forecast = (JSONObject) Weather.getJSONArray("daily_forecast").get(0);
+//                    wind_direction = daily_forecast.getString("wind_dir");
+                    weatherdata = ParseJSON.parseJson(data);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-            Log.d("test",wind_direction+" ");
-            mSearchResultsTextView.setText(wind_direction+" ");
-            super.onPostExecute(s);
+            mSearchResultsTextView.setText(weatherdata.toString());
+            super.onPostExecute(data);
         }
     }
 
