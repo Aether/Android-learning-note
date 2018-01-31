@@ -19,6 +19,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
@@ -27,6 +28,8 @@ import android.widget.Toast;
 
 import com.example.android.datafrominternet.utilities.NetworkUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -44,37 +47,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mSearchBoxEditText = (EditText) findViewById(R.id.et_search_box);
         mUrlDisplayTextView = (TextView) findViewById(R.id.tv_url_display);
-        mSearchResultsTextView = (TextView) findViewById(R.id.tv_github_search_results_json);
+        mSearchResultsTextView = (TextView) findViewById(R.id.tv_weather_search_results_json);
+
     }
 
-    private void makeGithubSeachQuery(){
-        String githubQuery = mSearchBoxEditText.getText().toString();
-        URL githubSearchUrl = NetworkUtils.buildUrl(githubQuery);
-        mUrlDisplayTextView.setText(githubSearchUrl.toString());
-        new GithubQueryTask().execute(githubSearchUrl);
-    }
+    private void makeWeatherSeachQuery(){
+        String cityQuery = mSearchBoxEditText.getText().toString();
+        URL weatherSearchUrl = NetworkUtils.buildUrl(cityQuery);
+        mUrlDisplayTextView.setText(weatherSearchUrl.toString());
+        String weatherSearchResults = null;
+        new WeatherQueryTask().execute(weatherSearchUrl);
 
-    public class GithubQueryTask extends AsyncTask<URL, Void, String> {
-        @Override
-        protected String doInBackground(URL... urls) {
-            URL searchUrl = urls[0];
-            String githubSearchResults = null;
-            try {
-                githubSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return githubSearchResults;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            if (s != null && !s.equals("")) {
-                mSearchResultsTextView.setText(s);
-            }
-        }
     }
 
     @Override
@@ -87,9 +73,46 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemThatWasClickedId = item.getItemId();
         if (itemThatWasClickedId == R.id.action_search) {
-            makeGithubSeachQuery();
+            makeWeatherSeachQuery();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public class WeatherQueryTask extends AsyncTask<URL, Void, String> {
+        @Override
+        protected String doInBackground(URL... params) {
+            URL searchUrl = params[0];
+            String weatherSearchResults = null;
+            try {
+                weatherSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return weatherSearchResults;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            String wind_direction = null;
+            if(s != null && !s.equals(""))
+                try {
+                    JSONObject weatherSearchResult = new JSONObject(s);
+                    JSONArray HeWeather = weatherSearchResult.getJSONArray("HeWeather6");
+                    Log.d("test",HeWeather+" "+"\n"+HeWeather.length());
+                    JSONObject Weather = HeWeather.getJSONObject(0);
+                    JSONArray daily_forecast = Weather.getJSONArray("daily_forecast");
+                    JSONObject wind_dir = (JSONObject) daily_forecast.get(0);
+                    wind_direction = wind_dir.getString("wind_dir");
+                    Log.d("test",wind_direction+" ");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            Log.d("test",wind_direction+" ");
+            mSearchResultsTextView.setText(wind_direction+" ");
+            super.onPostExecute(s);
+        }
+    }
+
+
 }
