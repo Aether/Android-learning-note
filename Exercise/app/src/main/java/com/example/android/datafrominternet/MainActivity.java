@@ -1,21 +1,8 @@
-/*
- * Copyright (C) 2016 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.android.datafrominternet;
 
-import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,16 +10,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.datafrominternet.utilities.NetworkUtils;
-
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -44,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView mSearchResultsTextView;
 
+    private ImageView mWeatherIcon;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         mSearchBoxEditText = (EditText) findViewById(R.id.et_search_box);
         mUrlDisplayTextView = (TextView) findViewById(R.id.tv_url_display);
         mSearchResultsTextView = (TextView) findViewById(R.id.tv_weather_search_results_json);
+        mWeatherIcon = (ImageView) findViewById(R.id.imageView);
 
     }
 
@@ -59,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
         String cityQuery = mSearchBoxEditText.getText().toString();
         URL weatherSearchUrl = NetworkUtils.buildUrl(cityQuery);
         mUrlDisplayTextView.setText(weatherSearchUrl.toString());
-        String weatherSearchResults = null;
         new WeatherQueryTask().execute(weatherSearchUrl);
+        new ShowIconTask().execute();
 
     }
 
@@ -98,17 +87,59 @@ public class MainActivity extends AppCompatActivity {
             HashMap<String,String> weatherdata = new HashMap<>();
             if(data != null && !data.equals(""))
                 try {
-//                    JSONObject weatherSearchResult = new JSONObject(s);
-//                    JSONObject Weather = weatherSearchResult.getJSONArray("HeWeather6").getJSONObject(0);
-//                    JSONObject daily_forecast = (JSONObject) Weather.getJSONArray("daily_forecast").get(0);
-//                    wind_direction = daily_forecast.getString("wind_dir");
                     weatherdata = ParseJSON.parseJson(data);
+                    if (weatherdata.get("status").equals("unknown city")){
+                        Toast.makeText(MainActivity.this,"请重新输入城市",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
+                    editor.putString("now",weatherdata.get("cond_code"));
+                    editor.apply();
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             mSearchResultsTextView.setText(weatherdata.toString());
             super.onPostExecute(data);
         }
+    }
+
+    public class ShowIconTask extends AsyncTask<URL, Void, Bitmap> {
+        @Override
+        protected Bitmap doInBackground(URL... params) {
+            Bitmap bitmap = null;
+            try {
+                SharedPreferences preferences = getSharedPreferences("data",MODE_PRIVATE);
+                String cond_code = preferences.getString("now"," ");
+                Log.d("test"," "+cond_code);
+                bitmap = getBitmap(cond_code);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            mWeatherIcon.setImageBitmap(bitmap);
+            super.onPostExecute(bitmap);
+        }
+
+    }
+
+
+    private static Bitmap getBitmap(String cond_code) throws IOException {
+
+        URL url = new URL("https://cdn.heweather.com/cond_icon/"+cond_code+".png");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setConnectTimeout(5000);
+        conn.setRequestMethod("GET");
+        if (conn.getResponseCode() == 200){
+            InputStream inputStream = conn.getInputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            return bitmap;
+        }
+        return null;
     }
 
 

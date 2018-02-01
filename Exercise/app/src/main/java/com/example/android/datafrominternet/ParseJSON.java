@@ -1,10 +1,16 @@
 package com.example.android.datafrominternet;
 
+import android.content.SharedPreferences;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by ucla on 2018/2/1.
@@ -18,6 +24,14 @@ public class ParseJSON extends Throwable {
 
         JSONObject weatherSearchResult = new JSONObject(data);
         JSONObject Weather = weatherSearchResult.getJSONArray("HeWeather6").getJSONObject(0);
+
+        String status = Weather.getString("status");
+        Log.d("test",status);
+        weatherdata.put("status",status);
+        if (status.equals("unknown city")){
+            return weatherdata;
+        }
+
         JSONObject daily_forecast = (JSONObject) Weather.getJSONArray("daily_forecast").get(0);
         JSONObject now = Weather.getJSONObject("now");
 //        JSONObject hourly = (JSONObject) Weather.getJSONArray("hourly").get(0);
@@ -28,11 +42,11 @@ public class ParseJSON extends Throwable {
         weatherdata.put("cond_code_d",daily_forecast.getString("cond_code_d"));
         weatherdata.put("cond_code_n",daily_forecast.getString("cond_code_n"));
         weatherdata.put("date",daily_forecast.getString("date"));
-
         weatherdata.put("location",Weather.getJSONObject("basic").getString("location"));
 
         weatherdata.put("tmp",now.getString("tmp"));
         weatherdata.put("cond_code",now.getString("cond_code"));
+
         weatherdata.put("cond_txt",now.getString("cond_txt"));
         weatherdata.put("wind_dir",now.getString("wind_dir"));
         weatherdata.put("wind_sc",now.getString("wind_sc"));
