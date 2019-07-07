@@ -263,10 +263,11 @@ All the possible exceptions must be declared in the constructor of subclass.
 - BufferedReader readLine();
 - LineNumberReader getLineNumber();
 
-    
+~~~
     BufferedReader in = new BufferedReader(
         new InputStreamReader(
             new FileInputStream("utf8.txt"), "utf8"));
+~~~
             
             
 ##### Stream/Reader/Scanner
